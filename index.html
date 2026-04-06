@@ -1,27 +1,107 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>LED Control</title>
+  <title>ESP32 LED Control</title>
+  <style>
+    body {
+      background: #0a0c0f;
+      color: #fff;
+      font-family: Arial;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      color: #00e5ff;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      max-width: 600px;
+      margin: auto;
+    }
+
+    .card {
+      background: #111418;
+      padding: 20px;
+      border-radius: 10px;
+      border: 1px solid #1e2530;
+      transition: 0.3s;
+    }
+
+    .card.on {
+      border-color: #00ff88;
+      box-shadow: 0 0 15px #00ff88;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin: 5px;
+      border: none;
+      cursor: pointer;
+      border-radius: 5px;
+      font-weight: bold;
+    }
+
+    .on-btn { background: #00e5ff; }
+    .off-btn { background: #444; color: white; }
+
+    #log {
+      margin-top: 30px;
+      height: 120px;
+      overflow: auto;
+      background: #111;
+      padding: 10px;
+      font-size: 12px;
+    }
+  </style>
 </head>
+
 <body>
 
-<h2>ESP32 LED Control</h2>
+<h1>ESP32 LED Dashboard</h1>
 
-<button onclick="send('LED1_ON')">LED1 ON</button>
-<button onclick="send('LED1_OFF')">LED1 OFF</button><br><br>
+<div class="grid">
+  <div class="card" id="c1">
+    <h3>LED 1</h3>
+    <button class="on-btn" onclick="send(1,true)">ON</button>
+    <button class="off-btn" onclick="send(1,false)">OFF</button>
+  </div>
 
-<button onclick="send('LED2_ON')">LED2 ON</button>
-<button onclick="send('LED2_OFF')">LED2 OFF</button><br><br>
+  <div class="card" id="c2">
+    <h3>LED 2</h3>
+    <button class="on-btn" onclick="send(2,true)">ON</button>
+    <button class="off-btn" onclick="send(2,false)">OFF</button>
+  </div>
 
-<button onclick="send('LED3_ON')">LED3 ON</button>
-<button onclick="send('LED3_OFF')">LED3 OFF</button>
+  <div class="card" id="c3">
+    <h3>LED 3</h3>
+    <button class="on-btn" onclick="send(3,true)">ON</button>
+    <button class="off-btn" onclick="send(3,false)">OFF</button>
+  </div>
+</div>
+
+<div id="log"></div>
 
 <script>
-function send(cmd){
+function log(msg){
+  const el = document.getElementById("log");
+  el.innerHTML += msg + "<br>";
+  el.scrollTop = el.scrollHeight;
+}
+
+function send(id, state){
+  const cmd = `LED${id}_${state ? "ON":"OFF"}`;
+
   fetch(`/api/control?command=${cmd}`)
     .then(res => res.json())
-    .then(data => console.log(data))
-    .catch(err => console.error(err));
+    .then(()=>{
+      log("Sent: " + cmd);
+      document.getElementById("c"+id).classList.toggle("on", state);
+    })
+    .catch(()=> log("Error sending command"));
 }
 </script>
 
