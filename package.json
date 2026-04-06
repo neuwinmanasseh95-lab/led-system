@@ -1,0 +1,7 @@
+{
+  "name": "mqtt-led",
+  "version": "1.0.0",
+  "dependencies": {
+    "mqtt": "^5.0.0"
+  }
+}
