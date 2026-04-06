@@ -1,23 +1,14 @@
-export default async function handler(req, res) {
-  const { command } = req.query;
+let command = "NONE";
 
-  // 🔥 Replace with YOUR ngrok URL
-  const ESP_URL = "https://abc123.ngrok-free.app";
+export default function handler(req, res) {
+  const { command: cmd } = req.query;
 
-  try {
-    const response = await fetch(`${ESP_URL}/control?command=${command}`);
-    const data = await response.text();
-
-    res.status(200).json({
-      success: true,
-      command,
-      response: data
-    });
-
-  } catch (err) {
-    res.status(500).json({
-      success: false,
-      error: err.message
-    });
+  // If button clicked → store command
+  if (cmd) {
+    command = cmd;
+    return res.status(200).json({ success: true, command });
   }
+
+  // If ESP32 calls → return last command
+  return res.status(200).json({ command });
 }
